@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LnwLiveSHTIK — ศูนย์บัญชาการถ่ายทอดสดหลายหน้าจอ (Command Center)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      background-color: var(--bg-primary);
+      min-width: 1024px;
+    }
+    .dashboard-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 16px;
+    }
+    .stream-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .stream-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .stream-card.live-border {
+      border-top: 3px solid var(--accent-live);
+    }
+    .stream-card.shopee-accent {
+      border-left: 3px solid #f97316;
+    }
+    .stream-card.tiktok-accent {
+      border-left: 3px solid #06b6d4;
+    }
+    .dash-logo-img {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <!-- แถบด้านบน (Header) -->
+  <header class="app-header" style="padding: 14px 28px;">
+    <div class="brand-section">
+      <img src="assets/logo.png" alt="LnwLiveSHTIK" class="dash-logo-img">
+      <div>
+        <div class="brand-title" style="font-size: 16px;">
+          LnwLiveSHTIK
+          <span class="brand-badge">Command Center v2.4 Pro</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" id="btnDashRefresh">
+        <span id="iconDashRefresh"></span> รีเฟรชข้อมูลสด
+      </button>
+      <button class="btn btn-primary" id="btnOpenSidePanelFromDash">
+        <span id="iconDashDock"></span> เปิดแถบควบคุม Side Panel
+      </button>
+    </div>
+  </header>
+
+  <div class="dashboard-container">
+    <!-- ภาพรวมตัวเลขสถิติระบบ (Top System Metrics - 100% TikTok) -->
+    <div class="grid-3" style="margin-bottom: 20px;">
+      <div class="stat-box">
+        <div class="stat-label">จำนวนสตรีมสด TikTok ที่กำลังรัน</div>
+        <div class="stat-value live" id="dashTotalLive">0 สตรีม</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">โควต้าจอ TikTok (ใช้งานได้)</div>
+        <div class="stat-value emerald" id="dashTikTokQuota">0 จอ</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">ยอดขายสะสม TikTok Shop (Real-Time)</div>
+        <div class="stat-value accent" id="dashTotalGmv">฿0.00</div>
+      </div>
+    </div>
+
+
+    <!-- เมทริกซ์การสตรีมหลายหน้าจอ (Multi-Screen Stream Matrix) -->
+    <div class="card" style="margin-bottom: 24px;">
+      <div class="card-header">
+        <span class="card-title" style="font-size: 14px;">
+          <span id="iconMatrix"></span> เมทริกซ์ควบคุมการสตรีมหลายหน้าจอ (Live Operations Matrix)
+        </span>
+        <span class="stat-label" style="margin: 0;" id="matrixStatusLabel">ระบบตรวจจับและซิงค์ข้อมูลอัตโนมัติ</span>
+      </div>
+      <div class="matrix-grid" id="streamMatrixGrid">
+        <div style="grid-column: 1 / -1; text-align: center; color: var(--text-dim); padding: 40px 0;">
+          กำลังเชื่อมต่อเซิร์ฟเวอร์และดึงสถานะสตรีม...
+        </div>
+      </div>
+    </div>
+
+    <!-- สตูดิโอคัสตอมคลิป, ตั้งเวลาไลฟ์, อ่านคอมเมนต์ & ปักหมุดสินค้า (TikTok Live Custom Studio) -->
+    <div class="grid-2" style="margin-top: 24px;">
+      <!-- คัสตอมคลิปวิดีโอ & ตั้งวันเวลาไลฟ์สด (Custom Video & Scheduler Studio) -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">
+            <span id="iconVideoScheduler"></span> คัสตอมคลิปวิดีโอ & ตั้งวันเวลาไลฟ์สดอัตโนมัติ
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">เลือกคลิปวิดีโอสำหรับไลฟ์สด (Local File / URL)</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" class="form-input" id="customVideoUrl" placeholder="วางลิงก์ไฟล์วิดีโอ MP4 หรือเลือกไฟล์จากเครื่อง...">
+            <input type="file" id="localVideoFileSelect" accept="video/mp4,video/mkv,video/flv" style="display: none;">
+            <button class="btn btn-secondary btn-sm" id="btnSelectLocalVideo">เลือกไฟล์</button>
+          </div>
+        </div>
+
+        <div class="grid-2" style="gap: 8px; margin-bottom: 12px;">
+          <div>
+            <label class="form-label">กำหนดวันที่ออกอากาศ</label>
+            <input type="date" class="form-input" id="scheduleDate">
+          </div>
+          <div>
+            <label class="form-label">กำหนดเวลาออกอากาศ</label>
+            <input type="time" class="form-input" id="scheduleTime">
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="btnSaveLiveSchedule" style="width: 100%;">
+          บันทึกตารางไลฟ์สดอัตโนมัติ (Save Scheduled Live)
+        </button>
+      </div>
+
+      <!-- อ่านคอมเมนต์สด & ปักหมุดสินค้าตะกร้า (Live Chat Reader & Product Pinning Studio) -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">
+            <span id="iconChatPin"></span> อ่านคอมเมนต์สด & สตูดิโอปักหมุดสินค้า (Live Cart Pinning)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">กล่องปักหมุดสินค้าด่วนในไลฟ์ (Pin Product ID)</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" class="form-input" id="pinProductId" placeholder="กรอก Product ID สินค้าที่ต้องการปักหมุด...">
+            <button class="btn btn-primary btn-sm" id="btnPinProductAction">ปักหมุดสินค้า</button>
+            <button class="btn btn-secondary btn-sm" id="btnUnpinProductAction">ปลดปักหมุด</button>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">กล่องอ่านคอมเมนต์สดจากผู้ชม (Real-Time Live Chat Reader)</label>
+          <div id="liveChatMonitorBox" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; height: 130px; overflow-y: auto; font-size: 12px;">
+            <div style="color: var(--text-dim); text-align: center; margin-top: 40px;">
+              ระบบกำลังรอการเชื่อมต่อห้องไลฟ์สดเพื่ออ่านคอมเมนต์...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>
+

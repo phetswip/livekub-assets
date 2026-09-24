@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LnwLiveSHTIK — ระบบจัดการไลฟ์สด TikTok อัตโนมัติ</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      min-width: 360px;
+      height: 100vh;
+      overflow-y: hidden;
+    }
+    .brand-logo-img {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- แถบหัวเรื่องด้านบน (Top Bar) -->
+    <header class="app-header">
+      <div class="brand-section">
+        <img src="assets/logo.png" alt="LnwLiveSHTIK" class="brand-logo-img" id="spLogoImg">
+        <div>
+          <div class="brand-title">
+            LnwLiveSHTIK
+            <span class="brand-badge" id="spLicenseStatus">v4.0 Pro</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary btn-icon" id="btnSidePanelRefresh" title="รีเฟรชข้อมูลทั้งหมด"></button>
+        <button class="btn btn-secondary btn-icon" id="btnSidePanelExpand" title="เปิดหน้าจอควบคุมเต็มจอ"></button>
+      </div>
+    </header>
+
+    <!-- แถบเมนูนำทาง (Navigation Tabs - 100% TikTok) -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="tab-tiktok">
+        <span id="tabIconTikTok"></span> TikTok ไลฟ์
+      </button>
+      <button class="tab-btn" data-tab="tab-autopin">
+        <span id="tabIconPin"></span> ปักหมุดออโต้
+      </button>
+      <button class="tab-btn" data-tab="tab-studio">
+        <span id="tabIconStudio"></span> สตูดิโอนาฬิกา
+      </button>
+      <button class="tab-btn" data-tab="tab-settings">
+        <span id="tabIconSettings"></span> ตั้งค่าระบบ
+      </button>
+    </nav>
+
+    <!-- เนื้อหาหลัก (Main Content Area) -->
+    <main class="main-content">
+      <!-- กล่องแจ้งเตือนรวม -->
+      <div id="spGlobalAlert"></div>
+
+      <!-- ============================================== -->
+      <!-- แท็บที่ 1: จัดการ TIKTOK LIVE                  -->
+      <!-- ============================================== -->
+      <section id="tab-tiktok" class="tab-pane active">
+        <!-- การ์ดสถานะไลฟ์ TikTok -->
+        <div class="card" style="border-left: 3px solid #06b6d4;">
+          <div class="card-header">
+            <span class="card-title">
+              <span id="iconTikTokTitle"></span> แผงควบคุม TikTok Live
+            </span>
+            <span id="tiktokLiveIndicator" class="badge badge-live">พร้อมทำงาน</span>
+          </div>
+
+          <div class="grid-2" style="margin-bottom: 12px;">
+            <div class="stat-box">
+              <div class="stat-label">ผู้ชมสด (Audience)</div>
+              <div class="stat-value live" id="spTikTokViewers">0</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">ยอดขายสะสม (GMV)</div>
+              <div class="stat-value emerald" id="spTikTokGmv">฿0.00</div>
+            </div>
+          </div>
+
+          <!-- ข้อมูลบัญชี TikTok ปัจจุบัน (ตรวจจับจากเซสชันของท่านโดยตรง ไม่ต้องเลือกบัญชีอื่น) -->
+          <div class="card" style="margin-bottom: 12px; padding: 12px; border: 1px solid var(--border-color); background: rgba(17, 24, 44, 0.65);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span class="stat-label" style="margin: 0; font-size: 11px;">บัญชี TikTok ปัจจุบัน (เชื่อมต่อโดยตรง)</span>
+              <span class="badge badge-live" id="badgeAccountStatus" style="font-size: 10px; padding: 2px 8px;">ตรวจจับอัตโนมัติ</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <img id="imgTikTokAvatar" src="assets/icon128.png" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-cyan); background: #0c1222;" alt="TikTok Avatar">
+              <div style="flex: 1; min-width: 0;">
+                <div id="lblTikTokDisplayName" style="font-weight: 600; font-size: 13px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  กำลังตรวจจับบัญชี TikTok...
+                </div>
+                <div style="font-size: 11px; color: var(--text-dim); display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                  <span id="txtTikTokHandle" style="color: var(--accent-cyan); font-weight: 500;">@กำลังโหลด...</span>
+                  <span style="font-size: 9px; background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); padding: 1px 5px; border-radius: 4px; font-family: var(--font-mono);" id="txtTikTokUid">UID: -</span>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-icon" id="btnRefreshTikTokAccount" title="ตรวจสอบและซิงค์เซสชันบัญชีปัจจุบัน"></button>
+            </div>
+            <input type="hidden" id="selTikTokAccount" value="">
+          </div>
+
+          <!-- สถานะการเชื่อมต่อเซสชัน TikTok -->
+          <div class="cookie-pill">
+            <div class="cookie-pill-info">
+              <span id="iconTikTokCookiePill"></span>
+              <div>
+                <strong style="display:block; font-size: 11px;">สถานะเซสชัน TikTok ของเบราว์เซอร์</strong>
+                <span style="font-size: 10px; color: var(--text-dim);" id="lblTikTokCookieStatus">กำลังตรวจสอบการล็อกอิน...</span>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" id="btnGrabTikTokCookie">ซิงค์เซสชันใหม่</button>
+          </div>
+
+          <!-- อัปเดตชื่อห้องไลฟ์สด -->
+          <div class="form-group">
+            <label class="form-label">ชื่อห้องไลฟ์สด (เปลี่ยนสดกลางอากาศได้ทันที)</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" class="form-input" id="txtTikTokTitle" value="LnwLive 24/7 Premium Sale Stream" placeholder="ใส่ชื่อห้องไลฟ์สดโปรโมชัน...">
+              <button class="btn btn-secondary btn-sm" id="btnUpdateTikTokTitle">อัปเดตชื่อ</button>
+            </div>
+          </div>
+
+          <!-- ปุ่มควบคุมการสตรีม TikTok (แสดงตามสถานะจริง) -->
+          <div style="margin-top: 10px;">
+            <button class="btn btn-success" id="btnStartTikTokLive" style="width: 100%;">
+              <span id="iconPlayTikTok"></span> เริ่มไลฟ์ TikTok
+            </button>
+            <button class="btn btn-danger" id="btnStopTikTokLive" style="width: 100%; display: none;">
+              <span id="iconStopTikTok"></span> หยุดการไลฟ์
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btnWatchTikTokLive" style="width: 100%; margin-top: 6px; font-size: 11px;">
+              เปิดดูหน้าจอห้องไลฟ์สด (Watch Live)
+            </button>
+          </div>
+        </div>
+
+        <!-- ตั้งค่าความปลอดภัยและโปรโมต -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">
+              <span id="iconTikTokOptions"></span> นโยบายและความปลอดภัยของห้องไลฟ์
+            </span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 12px; color: var(--text-main);">โหมดจำกัดอายุ 18+ (Age Restriction)</span>
+            <input type="checkbox" id="chkTikTokAge">
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; color: var(--text-main);">เปิดโปรโมตเนื้อหาเชิงพาณิชย์ (Commercial Content)</span>
+            <input type="checkbox" id="chkTikTokPromote" checked>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- แท็บที่ 2: ระบบปักหมุดสินค้าอัตโนมัติ (AUTO-PIN) -->
+      <!-- ============================================== -->
+      <section id="tab-autopin" class="tab-pane">
+        <div class="card pin-rotator-card">
+          <div class="card-header">
+            <span class="card-title">
+              <span id="iconAutoPinTitle"></span> ระบบปักหมุดสินค้าวนลูป (Auto-Pin Loop)
+            </span>
+            <span id="autoPinBadge" class="badge badge-live">ทำงานอยู่</span>
+          </div>
+
+          <div style="margin-bottom: 12px; font-size: 12px; color: var(--text-muted);">
+            ช่วยเพิ่มยอดการคลิกสั่งซื้อด้วยการปักหมุดสินค้าบนหน้าจอ TikTok สลับวนลูปต่อเนื่องอัตโนมัติ
+          </div>
+
+          <!-- ข้อมูลสินค้าที่กำลังปักหมุด -->
+          <div class="stat-box" style="margin-bottom: 12px;">
+            <div class="stat-label">สินค้าที่กำลังปักหมุดบนหน้าจอ</div>
+            <div id="spPinnedItemName" style="font-weight: 700; font-size: 13px; color: var(--accent-cyan);">
+              ชุดสินค้าโปรโมชัน TikTok Shop #1
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--text-dim);">
+              <span id="spPinDurationLeft">สถานะ: ปักหมุดปกติ</span>
+              <span id="spPinItemIndex">ลำดับ: 1/5</span>
+            </div>
+          </div>
+
+          <!-- ค้นหาสินค้าจากลิงก์ TikTok Shop -->
+          <div class="form-group">
+            <label class="form-label">ค้นหาสินค้าจากลิงก์ TikTok Shop (ดึงข้อมูลอัตโนมัติ)</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" class="form-input" id="txtLookupUrl" placeholder="วางลิงก์ https://shop.tiktok.com/... หรือ https://vt.tiktok.com/...">
+              <button class="btn btn-secondary btn-sm" id="btnLookupProduct">ค้นหาสินค้า</button>
+            </div>
+          </div>
+
+          <!-- คิวสินค้าสำหรับหมุนเวียนปักหมุด -->
+          <div style="margin-bottom: 12px;">
+            <div class="form-label" style="display: flex; justify-content: space-between;">
+              <span>รายการสินค้าในคิวปักหมุด</span>
+              <button class="btn btn-secondary btn-sm" id="btnClearPinQueue" style="font-size: 10px; padding: 2px 6px;">ล้างคิว</button>
+            </div>
+            <div id="pinQueueContainer" style="max-height: 180px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 4px;">
+              <div style="color: var(--text-main); font-size: 11px; padding: 4px 6px;">
+                1. สินค้าตัวอย่างชุดที่ 1 (Product ID: 1729381729)
+              </div>
+            </div>
+          </div>
+
+          <!-- ตั้งค่าระยะเวลาปักหมุด -->
+          <div class="grid-2" style="margin-bottom: 12px;">
+            <div>
+              <label class="form-label">ปักหมุดนาน (วินาที)</label>
+              <input type="number" class="form-input" id="numPinDuration" value="180" min="10" max="600">
+            </div>
+            <div>
+              <label class="form-label">เว้นช่วงปลดหมุด (วินาที)</label>
+              <input type="number" class="form-input" id="numUnpinDuration" value="1" min="1" max="10">
+            </div>
+          </div>
+
+          <!-- ปุ่มควบคุมระบบปักหมุดวนลูป -->
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-primary" id="btnStartAutoPin" style="flex: 1;">
+              <span id="iconPlayPin"></span> เริ่มระบบปักหมุดวนลูป
+            </button>
+            <button class="btn btn-danger" id="btnStopAutoPin" style="flex: 1;">
+              <span id="iconStopPin"></span> หยุดปักหมุด
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- แท็บที่ 3: สตูดิโอนาฬิกา OVERLAY (9:16 / 16:9)  -->
+      <!-- ============================================== -->
+      <section id="tab-studio" class="tab-pane">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">
+              <span id="iconStudioTitle"></span> สตูดิโอนาฬิกา Overlay ป้องกันตรวจจับ
+            </span>
+            <span class="badge badge-live" id="videoOrientationBadge">แนวตั้ง (9:16)</span>
+          </div>
+
+          <!-- เลือกคลิปจากเซิร์ฟเวอร์ -->
+          <div class="form-group" style="margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label class="form-label" style="margin: 0;">คลิปวิดีโอบนเซิร์ฟเวอร์ (พร้อมนำไปไลฟ์)</label>
+              <button class="btn btn-secondary btn-icon" id="btnRefreshServerVideos" title="รีเฟรชรายการคลิปบนเซิร์ฟเวอร์" style="width: 22px; height: 22px; padding: 2px; font-size: 10px;"></button>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <select class="form-select" id="selServerVideos" style="flex: 1; font-size: 11px;">
+                <option value="">-- ไม่พบคลิปบนเซิร์ฟเวอร์ กรุณาอัปโหลดคลิปใหม่ --</option>
+              </select>
+              <button class="btn btn-primary btn-sm" id="btnApplyServerVideo" style="font-size: 11px; white-space: nowrap;">ใช้คลิปนี้</button>
+            </div>
+          </div>
+
+          <!-- เลือกวิดีโอ & ตรวจวัดขนาดอัตโนมัติ -->
+          <div class="form-group">
+            <label class="form-label">หรืออัปโหลดคลิปใหม่จากเครื่อง (พร้อมแถบสถานะ)</label>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+              <input type="file" id="studioVideoFileInput" accept="video/mp4,video/mkv,video/webm" style="display: none;">
+              <button class="btn btn-secondary btn-sm" id="btnPickStudioVideo" style="flex: 1;">เลือกไฟล์วิดีโอจากเครื่อง</button>
+              <button class="btn btn-primary btn-sm" id="btnSaveOverlayCoords">บันทึกพิกัด</button>
+            </div>
+
+            <!-- กล่องแสดงสถานะการอัปโหลดไฟล์วิดีโอ -->
+            <div id="uploadProgressBox" style="display: none; margin-bottom: 8px; background: rgba(0,0,0,0.4); border-radius: var(--radius-sm); padding: 8px; border: 1px solid var(--border-color);">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                <span id="uploadProgressLabel" style="color: var(--accent-cyan);">กำลังอัปโหลดคลิปขึ้นเซิร์ฟเวอร์...</span>
+                <span id="uploadProgressPercent" style="font-family: var(--font-mono); color: var(--text-main);">0%</span>
+              </div>
+              <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                <div id="uploadProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-cyan), #3b82f6); transition: width 0.15s ease;"></div>
+              </div>
+              <div id="uploadStatusMessage" style="font-size: 10px; color: #10b981; margin-top: 4px; display: none;">
+                อัปโหลดคลิปเสร็จสมบูรณ์ พร้อมนำไปไลฟ์สดได้ทันที
+              </div>
+            </div>
+
+            <!-- ปุ่มสลับสัดส่วนและแสดงขนาด -->
+            <div style="display: flex; gap: 6px; align-items: center; justify-content: space-between;">
+              <div style="display: flex; gap: 4px;">
+                <button class="btn btn-primary btn-sm" id="btnMode916" style="font-size: 10px; padding: 3px 8px;">แนวตั้ง (9:16)</button>
+                <button class="btn btn-secondary btn-sm" id="btnMode169" style="font-size: 10px; padding: 3px 8px;">แนวนอน (16:9)</button>
+              </div>
+              <span id="txtVideoResolution" style="font-size: 10px; color: var(--accent-cyan); font-family: var(--font-mono);">720x1280 (9:16)</span>
+            </div>
+          </div>
+
+          <!-- แคนวาสจำลองหน้าจอ พร้อม Drag & Drop ย้ายตำแหน่ง -->
+          <div class="studio-canvas-container mode-916" id="studioCanvas">
+            <video class="studio-video-element" id="studioVideoPlayer" loop muted playsinline></video>
+            <div class="overlay-element" id="overlayDate" style="top: 15%; left: 50%; transform: translate(-50%, 0); color: #ffffff; background: none; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.9);">
+              2026-09-24
+            </div>
+            <div class="overlay-element" id="overlayTime" style="top: 25%; left: 50%; transform: translate(-50%, 0); color: #facc15; background: none; font-size: 26px; text-shadow: 0 2px 6px rgba(0,0,0,0.95);">
+              20:30:00
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+            <div style="font-size: 11px; color: var(--text-dim);">
+              คลิกลากวันที่หรือเวลาเพื่อจัดตำแหน่งอิสระ
+            </div>
+            <label class="form-check" style="font-size: 11px; margin: 0; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+              <input type="checkbox" id="chkTimeBg">
+              <span style="color: var(--text-dim);">เปิดพื้นหลังสีดำ</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- แท็บที่ 4: ตั้งค่าระบบ (Keyless Server Mode)   -->
+      <!-- ============================================== -->
+      <section id="tab-settings" class="tab-pane">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">
+              <span id="iconSettingsConfig"></span> เซิร์ฟเวอร์และระบบเชื่อมต่อ (Keyless Mode)
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">API Base URL ของเซิร์ฟเวอร์หลัก</label>
+            <input type="text" class="form-input" id="cfgBaseUrl" value="http://102.129.229.177:8000">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">โหมดการยืนยันตัวตน</label>
+            <input type="text" class="form-input" value="Keyless Mode Enabled (ไม่ต้องกรอก API Key)" disabled>
+          </div>
+
+          <button class="btn btn-primary" id="btnSaveConfig" style="width: 100%;">
+            <span id="iconSaveConfig"></span> บันทึกการตั้งค่าเซิร์ฟเวอร์
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="sidepanel.js"></script>
+</body>
+</html>
