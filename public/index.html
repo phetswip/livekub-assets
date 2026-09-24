@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LIVEKUB — AI Live Restream</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>LIVEKUB · AI Live Restream</h1>
+      <p class="sub">อัปคลิป → ส่งไลฟ์เข้า RTMP อย่างเป็นทางการด้วย Stream Key ของคุณเอง</p>
+    </header>
+
+    <section class="card">
+      <h2>1. อัปโหลดคลิป</h2>
+      <p class="hint">รองรับไฟล์วิดีโอ (mp4/mov/…) รวมถึงวิดีโอที่ผ่าน AI lip-sync มาแล้ว</p>
+      <input type="file" id="fileInput" accept="video/*" />
+      <button id="btnUpload">อัปโหลด</button>
+      <div id="uploadState" class="state"></div>
+    </section>
+
+    <section class="card">
+      <h2>2. ปลายทางไลฟ์ (Official RTMP)</h2>
+      <p class="hint">
+        นำ <b>RTMP URL</b> และ <b>Stream Key</b> จากแดชบอร์ดทางการของแพลตฟอร์มมาวาง เช่น
+        TikTok LIVE Studio หรือ Shopee Live — ระบบนี้ไม่ล็อกอิน ไม่ดึง cookie ให้
+      </p>
+      <label>RTMP URL
+        <input type="text" id="rtmpUrl" placeholder="rtmp://ingest.example.com/live" />
+      </label>
+      <label>Stream Key
+        <input type="password" id="streamKey" placeholder="วาง stream key ของคุณ" />
+      </label>
+      <label>ชื่อไลฟ์ (ไม่บังคับ)
+        <input type="text" id="title" placeholder="ไลฟ์ขายของ" />
+      </label>
+      <label class="row">
+        <input type="checkbox" id="loop" checked /> เล่นวนต่อเนื่อง (24/7)
+      </label>
+      <button id="btnStart" disabled>เริ่มไลฟ์</button>
+    </section>
+
+    <section class="card">
+      <h2>3. สถานะไลฟ์</h2>
+      <div id="sessions" class="sessions"></div>
+    </section>
+
+    <footer>
+      <p class="note">
+        ⚠️ คุณต้องมีสิทธิ์ไลฟ์บนแพลตฟอร์มปลายทาง และใช้ Stream Key ที่ออกให้อย่างเป็นทางการเท่านั้น
+      </p>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

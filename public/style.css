@@ -1,0 +1,56 @@
+:root {
+  --bg: #0b1020;
+  --card: #151b2e;
+  --line: rgba(255, 255, 255, 0.08);
+  --text: #e6ebf5;
+  --muted: #93a1c0;
+  --cyan: #06b6d4;
+  --red: #dc2626;
+  --green: #10b981;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 24px 16px;
+}
+.wrap { max-width: 640px; margin: 0 auto; }
+header h1 { margin: 0 0 4px; font-size: 22px; }
+.sub { color: var(--muted); margin: 0 0 20px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.card h2 { margin: 0 0 8px; font-size: 15px; }
+.hint { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+label.row { display: flex; align-items: center; gap: 8px; }
+input[type="text"], input[type="password"] {
+  width: 100%; padding: 10px; border-radius: 8px;
+  border: 1px solid var(--line); background: #0e1424; color: var(--text);
+}
+input[type="file"] { display: block; margin-bottom: 10px; color: var(--muted); }
+button {
+  margin-top: 12px; padding: 10px 16px; border: 0; border-radius: 8px;
+  background: var(--cyan); color: #04121a; font-weight: 700; cursor: pointer;
+}
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.stop { background: var(--red); color: #fff; margin: 0; }
+.state { margin-top: 10px; font-size: 13px; color: var(--cyan); }
+.sessions { display: flex; flex-direction: column; gap: 10px; }
+.session {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+}
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; margin-left: 8px; }
+.badge.live { background: var(--red); color: #fff; }
+.badge.idle, .badge.ended { background: #33415c; color: #cdd7ea; }
+.badge.error { background: #7f1d1d; color: #fecaca; }
+.uptime { color: var(--muted); font-size: 12px; margin-left: 8px; }
+.err { color: #fca5a5; font-size: 12px; margin-top: 4px; }
+.note { color: var(--muted); font-size: 12px; }
